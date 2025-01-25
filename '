@@ -8,7 +8,7 @@ typedef struct box
 {
 	bool revealed;			// zmienna sprawdzajaca czy dana pole w trakcie gry zostalo odkryte
 	bool flagged;	                  // zmienna ktora sprawdzi nam czy dane pole zostalo oznaczone flaga(zapobiegnie nacisniecie przypadkowe na nia i odsloniecie bomby)
-	char value;			//zmienna ktora posiada ilosc bomb  wokol danego pola albo sama bombe
+	int value;			//zmienna ktora posiada ilosc bomb  wokol danego pola albo sama bombe
 } *box_t; 
 
 //ogolnie revealed robie na boola bo bedzie albo zwracac true albo false bedzie szybciej po prostu i tak samo czy jest oflagowane
@@ -51,7 +51,7 @@ void free_board(int row, int col, box_t** board)         //funkcja zwalniajaca s
 	free(board);
 }
 
-void choose_mode_of_the_game(int* row, int* col, int* num_of_bombs)                       //funkcja wybierajaca tryb gry
+void choose_mode_of_the_game(int* row, int* col)                       //funkcja wybierajaca tryb gry
 {
 	printf(" Wybierz tryb gry, podajac numer trybu:\n");
 	printf("1. MALA PLANSZA\n");
@@ -76,17 +76,14 @@ void choose_mode_of_the_game(int* row, int* col, int* num_of_bombs)             
 	switch (mode) 				// i tutaj switchem i caseami w zaleznosci jaki tryb wybierze sie to wykonuje sie danych case
 	{
 		case 1:
-		*num_of_bombs = 10;
 		*row = 9;
 		*col = 9;
 		break;
 		case 2:
-		*num_of_bombs = 40;
 		*row = 16;
 		*col = 16;
 		break;
 		case 3:
-		*num_of_bombs = 99;
 		*row = 16;
 		*col = 30;
 		break;
@@ -96,98 +93,67 @@ void choose_mode_of_the_game(int* row, int* col, int* num_of_bombs)             
 
 		printf("\nPodaj ilosc kolumn planszy: ");
                 scanf("%d", col);
-
 		break;
 	}
 }
 
 void print_board(int row, int col)
 {
-	for(int i = 0; i < col; i++)
+	for(int i = 0; i < row; i++)
 	{
-		printf("+---");
+		for(int j = 0; j < col; j++)
+			printf("+---");
 	}
 	printf("+\n");
-	for(int x = 0; x < row; x++)
-	{
-	for(int j = 0; j < row; j++)
+	for(int j = 0; j < col; j++)
 	{
 		printf("|   ");
 	}
 	printf("|\n");
-	for(int i = 0; i < col; i++)
+	for(int i = 0; i < row; i++)
 	{
 		printf("+---");
 	}
 	printf("+\n");
-	}
 }
 
 void generate_bombs(int row, int col, box_t** board, int num_of_bombs)
 {
 	int placed_bombs = 0;
+	srand(time(NULL));
 	while(placed_bombs < num_of_bombs)
 	{
 		int randrow = rand() % row ;
 	      	int randcol = rand() % col ;
-		if(board[randrow][randcol]->value != '*')
+		if(**board[randrow][randcol]->value != '*')
 			{
-				board[randrow][randcol]->value = '*';
+				**board[randrow][randcol]->value = '*';
 				placed_bombs++;
 			}	
 	}
 }	
 
-void count_bombs_around(int row, int col, box_t** board)
-{
-	int bomb_counter = 0;
-	for(int i = 0; i < row; i++)
-	{
-		for(int j = 0; j < col; j++)
-		{
 
-			for(int x = i-1; x <= (i+1); x++)
-			{
-				//printf("y\n");
-				for(int y = j-1; y <= (j+1); y++)
-				{
-					//printf("x\n");
-					if(x >= 0 && y >= 0 && x < row && y < col)
-					{
-						if(board[x][y]->value == '*')
-						bomb_counter++;	
-					}
-				}
-			}
-			//printf("%d\n", bomb_counter);
-			if(board[i][j]->value != '*')
-			board[i][j]->value = '0' + bomb_counter;	
-			bomb_counter = 0;
-		}
-	}
-}
+
 
 
 
 
 int main(int argc, char** argv)
 {
-	int row;
-	int col;
-	int num_of_bombs;
-	srand(time(NULL));
-	choose_mode_of_the_game(&row, &col, &num_of_bombs);
-	box_t** board = create_board(row, col);
-	generate_bombs(row, col, board, num_of_bombs);
-	count_bombs_around(row, col, board);
+	int row = atoi(argv[1]);
+	int col = atoi(argv[2]);
+	choose_mode_of_the_game(&row, &col);
 	print_board(row, col);
-	
-	printf("\n\n");
-	for(int i = 0; i < col; i++)
-	{
-		for(int j = 0; j < row; j++)
-		printf("%c ", board[i][j]->value);
-		printf("\n");
-	}
-	return 0;
 }
+
+/// to kontrolnie do sprawdzania
+
+
+
+
+
+
+
+
+
