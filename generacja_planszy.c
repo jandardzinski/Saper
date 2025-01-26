@@ -1,17 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <time.h>
-
-typedef struct box
-{
-	bool revealed;			// zmienna sprawdzajaca czy dana pole w trakcie gry zostalo odkryte
-	bool flagged;	                  // zmienna ktora sprawdzi nam czy dane pole zostalo oznaczone flaga(zapobiegnie nacisniecie przypadkowe na nia i odsloniecie bomby)
-	char value;			//zmienna ktora posiada ilosc bomb  wokol danego pola albo sama bombe
-} *box_t; 
-
-//ogolnie revealed robie na boola bo bedzie albo zwracac true albo false bedzie szybciej po prostu i tak samo czy jest oflagowane
+#include "generacja_planszy.h"
 
 box_t **create_board(int row, int col)              //alokacja pamieci dla dwuwymiarowej tablicy struktur 
 {
@@ -30,8 +17,8 @@ box_t **create_board(int row, int col)              //alokacja pamieci dla dwuwy
 		for(int j = 0; j < col; j++)
 		{
 			board[i][j] = malloc(sizeof **board);     // a tutaj alokacja pamieci dla struktur znajdujacych sie w kazdym elemencie tablicy
-			board[i][j]->revealed = false;            
-			board[i][j]->value = 0;	
+			board[i][j]->revealed = false;
+			board[i][j]->value = '0';
 		}
 	}
 	return board;	
@@ -97,21 +84,44 @@ void choose_mode_of_the_game(int* row, int* col, int* num_of_bombs)             
 		printf("\nPodaj ilosc kolumn planszy: ");
                 scanf("%d", col);
 
+		printf("\nPodaj liczbe bomb ktore chcesz wygenerowac: ");
+		scanf("%d", num_of_bombs);
+
 		break;
 	}
 }
 
-void print_board(int row, int col)
+void print_board(int row, int col, box_t** board)
 {
+	for(int i = 0; i < col; i += 2)
+	{
+		printf("  %d  ", i+1);
+		printf(" %d ", i+2);
+	}
+	printf("\n");	
+
+	
 	for(int i = 0; i < col; i++)
 	{
 		printf("+---");
 	}
 	printf("+\n");
-	for(int x = 0; x < row; x++)
+	for(int i = 0; i < row; i++)
 	{
-	for(int j = 0; j < row; j++)
+	for(int j = 0; j < col; j++)
 	{
+		if(board[i][j]->revealed || board[i][j]->value == 'F')
+		{
+			if(board[i][j]->value > '0' || board[i][j]->value == '*')
+				printf("| %c ", board[i][j]->value);
+
+			else
+			{
+				printf("| "); 
+				printf("\u25AA ");
+			}
+		}
+		else
 		printf("|   ");
 	}
 	printf("|\n");
@@ -121,6 +131,7 @@ void print_board(int row, int col)
 	}
 	printf("+\n");
 	}
+  
 }
 
 void generate_bombs(int row, int col, box_t** board, int num_of_bombs)
@@ -161,33 +172,18 @@ void count_bombs_around(int row, int col, box_t** board)
 			}
 			//printf("%d\n", bomb_counter);
 			if(board[i][j]->value != '*')
-			board[i][j]->value = '0' + bomb_counter;	
+			{
+				if(bomb_counter > 0)
+				{
+					board[i][j]->value = '0' + bomb_counter;
+				}	
+			
+			}
 			bomb_counter = 0;
-		}
+		}	
 	}
 }
 
 
 
 
-int main(int argc, char** argv)
-{
-	int row;
-	int col;
-	int num_of_bombs;
-	srand(time(NULL));
-	choose_mode_of_the_game(&row, &col, &num_of_bombs);
-	box_t** board = create_board(row, col);
-	generate_bombs(row, col, board, num_of_bombs);
-	count_bombs_around(row, col, board);
-	print_board(row, col);
-	
-	printf("\n\n");
-	for(int i = 0; i < col; i++)
-	{
-		for(int j = 0; j < row; j++)
-		printf("%c ", board[i][j]->value);
-		printf("\n");
-	}
-	return 0;
-}
