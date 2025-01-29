@@ -94,7 +94,7 @@ void choose_mode_of_the_game(int* row, int* col, int* num_of_bombs)             
 			printf("Niepoprawna wartosc kolumn\nWprowadz wartosc ponownie: ");
 		}													
 		printf("\nPodaj liczbe bomb ktore chcesz wygenerowac: ");			// -||- liczby bomb
-		while(check_arguments(num_of_bombs) != 0)
+		while(check_arguments(num_of_bombs) != 0 ||  *num_of_bombs >= *row * (*col))
 		{	
 			printf("Niepoprawnie podano ilosc bomb\n");
 		}
@@ -116,15 +116,28 @@ void print_board(int row, int col, box_t** board)    //funkcja wypisujaca plansz
 {
 	printf("\n");	
 
-	printf("Wynik: %d\n\n", 10*get_revealed()*get_mode());  
-	
+	printf("Wynik: %d\n\n", 10*get_revealed()*get_mode());
+
+	printf("   ");
+	for(int i = 1; i <= col; i++)
+	{
+		if(i <= 9)
+		{
+		printf(" %2d ", i);
+		}
+		else
+		printf(" %2d ", i);
+	}
+	printf("\n");
+	printf("   ");
 	for(int i = 0; i < col; i++)
 	{
 		printf("+---");                         
 	}
 	printf("+\n");
 	for(int i = 0; i < row; i++)
-	{								
+	{
+		printf("%2d ", i+1);		
 	for(int j = 0; j < col; j++)					
 	{
 		if(board[i][j]->revealed || board[i][j]->value == 'F')		
@@ -142,6 +155,7 @@ void print_board(int row, int col, box_t** board)    //funkcja wypisujaca plansz
 		printf("|   ");
 	}
 	printf("|\n");
+	printf("   ");
 	for(int i = 0; i < col; i++)
 	{
 		printf("+---");

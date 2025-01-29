@@ -1,8 +1,15 @@
 gj 15600
 asia 7960
+test2 7600
+test 1220
 jasiek 860
 jasiuznowu 840
+test 710
+test4 600
 clear 410
 jasiu 280
+test3 230
 jasiu 140
+gracz 60
 JASIEK 40
+test1 10

@@ -38,8 +38,11 @@ void reveal_box(box_t** board, int row, int col, int x, int y)                  
 	}
 	if((x >= 0 && y >= 0) && x <= row && y <= col)
 	{
+		if(!board[x][y]->revealed && !board[x][y]->bomb)
+			revealed++;
+
 		board[x][y]->revealed = true;
-		revealed++;
+
 		if(board[x][y]->value == '0' )
 		{
 			for(int i = x-1; i <= (x+1); i++)
@@ -118,6 +121,7 @@ void process_arguments(int row, int col, box_t** board)				// funkcja przetwarza
 				case 'r':
 				if(first_move)						//warunek dla pierwszego ruchu, gwarancja nieodkrycia bomby w pierwszym ruchu
 				{
+					revealed++;
 					first_move = false;
 					board[x-1][y-1]->revealed = true;
 					generate_bombs(row, col, board, bomb);			
